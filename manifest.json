@@ -1,0 +1,39 @@
+{
+  "online": {
+    "processes": [{
+      "algorithmDescription": {
+        "pt-BR": "Importação do arquivo airports de domínio público."
+      },
+      "algorithmName": "online_airports",
+      "algorithmTitle": {
+        "pt-BR": "Carga online Airports"
+      },
+      "instanceProperties": {
+        "profile": "",
+        "properties": {
+          "instanceType": "c1.nano",
+          "dockerImage": "online_app",
+          "autoscale": {
+            "enabled": true,
+            "minReplicas": 1,
+            "maxReplicas": 5
+          },
+          "healthcheck": {
+            "path": "/healthy"
+          },
+          "port": 8080,
+          "preemptible": true
+        }
+      },
+      "name": "online_carolapp"
+    }]
+  },
+  "docker": [{
+    "dockerName": "online_app",
+    "dockerTag": "0.1.0",
+    "gitBranch": "main",
+    "gitPath": "/",
+    "gitDockerfileName": "Dockerfile",
+    "gitRepoUrl": "https://github.com/Liocadoso/CAPPB"
+  }]
+}
