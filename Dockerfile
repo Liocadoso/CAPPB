@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia o código da aplicação
-COPY app.py .
+COPY batch_airports.py .
 
 # Comando padrão para rodar o processo
-CMD ["python", "app.py"]
+CMD ["python", "batch_airports.py"]
