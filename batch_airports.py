@@ -1,27 +1,37 @@
-from fastapi import FastAPI, HTTPException
+import pandas as pd
+from pycarol import Carol, Staging
+import os
 
-app = FastAPI()
+# ================== CONFIGURE AQUI ==================
+TENANT = "SEU_TENANT"
+ORG = "SUA_ORG"
+APP = "SEU_APP"
+FILE_NAME = "airports.dat"     # agora na raiz
+FILE_PATH = FILE_NAME
+# ====================================================
 
-# Lista de arquivos disponíveis (exemplo)
-FILES = [
-    {"id": "f1", "name": "airports_full.csv", "url": "/files/f1/content"},
-    {"id": "f2", "name": "airports_delta.csv", "url": "/files/f2/content"}
-]
+def main():
+    print("Iniciando Batch...")
 
-@app.get("/files")
-def list_files():
-    return FILES
+    if not os.path.exists(FILE_PATH):
+        raise FileNotFoundError(f"Arquivo {FILE_NAME} não encontrado na raiz do container.")
 
+    print(f"Lendo arquivo {FILE_PATH}...")
+    df = pd.read_csv(FILE_PATH, sep=",")   # ajuste após me dizer o separador
 
-@app.get("/files/{file_id}/content")
-def get_file_content(file_id: str):
-    if file_id == "f1":
-        return {
-            "content": "aeroporto_id,aeroporto_nome,iata\n1,Goroka,GKA"
-        }
-    if file_id == "f2":
-        return {
-            "content": "aeroporto_id,aeroporto_nome,iata\n2,Outro Aeroporto,XYZ"
-        }
+    print("Conectando na Carol...")
+    carol = Carol(tenant=TENANT, org=ORG, app=APP)
+    staging = Staging(carol)
 
-    raise HTTPException(status_code=404, detail="Arquivo não encontrado")
+    print("Enviando para Staging Carol...")
+    staging.send_data(
+        df,
+        staging_name="airports_batch",
+        incremental=False
+    )
+
+    print("✔ Finalizado com sucesso!")
+    
+
+if __name__ == "__main__":
+    main()
