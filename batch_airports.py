@@ -17,14 +17,13 @@ def main():
     print(df.head())
 
     print("\nConectando na Carol...")
-    carol = Carol() 
+    carol = Carol()                     
     staging = Staging(carol)
 
     print("\nEnviando staging...")
     staging.send_data(
-        data=df,                     
-        staging_name="airports_batch",
-        incremental=False
+        data=df,
+        staging_name="airports_batch"    
     )
 
     print("\n✔ Finalizado com sucesso no App Batch!")
