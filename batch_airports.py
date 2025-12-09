@@ -17,12 +17,12 @@ def main():
     print(df.head())
 
     print("\nConectando na Carol...")
-    carol = Carol()  # não recebe tenant/org/app dentro do batch
+    carol = Carol() 
     staging = Staging(carol)
 
     print("\nEnviando staging...")
     staging.send_data(
-        data=df,                     # <-- chave obrigatória nesta versão
+        data=df,                     
         staging_name="airports_batch",
         incremental=False
     )
