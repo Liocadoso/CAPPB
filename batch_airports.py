@@ -13,17 +13,16 @@ def main():
 
     print(f"Lendo arquivo {FILE_PATH}...")
     df = pd.read_csv(FILE_PATH, sep=",")
-    print("Prévia do dataframe:")
+    print("\n📊 Prévia do dataframe:")
     print(df.head())
 
     print("\nConectando na Carol...")
-    carol = Carol()  # <-- SEM parâmetros!
-
+    carol = Carol()  # não recebe tenant/org/app dentro do batch
     staging = Staging(carol)
 
-    print("Enviando staging...")
+    print("\nEnviando staging...")
     staging.send_data(
-        df,
+        data=df,                     # <-- chave obrigatória nesta versão
         staging_name="airports_batch",
         incremental=False
     )
