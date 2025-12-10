@@ -1,34 +1,44 @@
-from pycarol import Carol, Staging
+from pycarol import Carol, Storage, CarolDataModel
 import pandas as pd
 import os
 
 FILE_NAME = "airports.dat"
-FILE_PATH = FILE_NAME
+DM_NAME = "airports_batch"     
 
 def main():
-    print("\n===== Iniciando Batch =====")
+    print("\n===== Batch Airports =====\n")
 
-    if not os.path.exists(FILE_PATH):
-        raise FileNotFoundError(f"Arquivo {FILE_NAME} não encontrado no container")
+    if not os.path.exists(FILE_NAME):
+        raise FileNotFoundError(f"❌ Arquivo {FILE_NAME} não encontrado no container\n"
+                                "Verifique se está na raiz junto do Dockerfile.")
 
-    print(f"Lendo arquivo {FILE_PATH}...")
-    df = pd.read_csv(FILE_PATH, sep=",")
-    print("\n📊 Prévia do dataframe:")
-    print(df.head())
+    print(f"Lendo arquivo {FILE_NAME}...")
+    df = pd.read_csv(FILE_NAME, sep=",")   
+    print("\n📊 Prévia:\n", df.head())
 
     print("\nConectando na Carol...")
     carol = Carol()
-    staging = Staging(carol)
+    storage = Storage(carol)
+    dm = CarolDataModel(carol)
 
-    staging_name = "airports_batch"
+    # ------------  1) Salvar arquivo no Storage  ----------------
+    output = "/tmp/storage/airports.csv"
+    df.to_csv(output, index=False)
 
-    print("\nCriando staging (se não existir)...")
-    staging.create(staging_name=staging_name, data=df) 
+    storage.save(
+        name="airports.csv",
+        obj_path=output,
+        content_type="text/csv"
+    )
+    print("\n💾 Arquivo salvo no Storage da Carol\n")
 
-    print("\nEnviando dados para staging...")
-    staging.send_data(df, staging_name)
+    # ------------  2) Inserir no DataModel  ---------------------
+    print(f"Inserindo no DataModel '{DM_NAME}' ...")
+    dm.ingest(df, model_name=DM_NAME)
 
-    print("\n✔ Finalizado com sucesso no App Batch!")
+    print("\n🚀 Processo finalizado com sucesso!")
+    print("📍 Storage disponível na aba STORAGE do App")
+    print(f"📍 Dados disponíveis no DataModel: {DM_NAME}\n")
 
 
 if __name__ == "__main__":
