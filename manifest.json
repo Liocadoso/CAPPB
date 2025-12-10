@@ -1,50 +1,34 @@
 {
-  "online": {
-    "processes": [
-      {
-        "algorithmDescription": {
-          "pt-BR": "Importação do arquivo airports de domínio público."
-        },
-        "algorithmName": "online_airports",
-        "algorithmTitle": {
-          "pt-BR": "Carga online Airports"
-        },
-        "dataModels": [],
-        "instanceProperties": {
-          "profile": "",
-          "properties": {
-            "instanceType": "c1.nano",
-            "dockerImage": "gcr.io/labs-ai-apps-production/online_app:0.1.0",
-            "autoscale": {
-              "enabled": true,
-              "minReplicas": 1,
-              "maxReplicas": 5
-            },
-            "healthcheck": {
-              "path": "/healthy"
-            },
-            "port": 8080,
-            "preemptible": true
-          }
-        },
-        "name": "online_carolapp"
-      }
-    ]
+  "batch": {
+    "processes": [{
+      "algorithmDescription": {
+        "pt-BR": "Processo que lê arquivo .dat e carrega no datamodel da Carol"
+      },
+      "algorithmName": "batch_airports",
+      "algorithmTitle": {
+        "pt-BR": "Carga batch Airports .dat → DataModel"
+      },
+      "dataModels": ["airport_batch"],
+      "instanceProperties": {
+        "properties": {
+          "dockerName": "batch_app",         
+          "instanceType": "c1.nano",
+          "preemptible": true
+        }
+      },
+      "name": "batch_carga_dat"
+    }]
   },
 
-  "docker": [
-    {
-      "dockerName": "online_app",
-      "dockerTag": "0.1.0",
-
-      "dockerRegistry": "gcr.io",
-      "dockerProject": "labs-ai-apps-production",
-      "dockerRepository": "online_app",
-
-      "gitBranch": "main",
-      "gitPath": "/",
-      "gitDockerfileName": "Dockerfile",
-      "gitRepoUrl": "https://github.com/Liocadoso/CAPPB"
-    }
-  ]
+  "docker": [{
+    "dockerName": "batch_app",
+    "dockerTag": "0.1.0",
+    "dockerRegistry": "gcr.io",
+    "dockerProject": "labs-ai-apps-production",
+    "dockerRepository": "online_app",
+    "gitBranch": "main",
+    "gitPath": "/",                       
+    "gitDockerfileName": "Dockerfile",
+    "gitRepoUrl": "https://github.com/Liocadoso/CAPPB"
+  }]
 }
