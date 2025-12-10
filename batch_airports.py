@@ -7,7 +7,7 @@ bq = BQ(carol)
 storage = Storage(carol)
 
 # -------- 1) Ler .dat na raiz do projeto (após COPY no Docker) --------
-file_path = "/app/dataset/arquivo.dat"
+file_path = "/app/airports.dat"
 
 if not os.path.exists(file_path):
     raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
