@@ -15,7 +15,7 @@ if not os.path.exists(file_path):
 df = pd.read_csv(file_path, sep=";", encoding="utf-8")  
 
 # -------- 2) Inserir no datamodel --------
-bq.insert(df, dm_name="airport_batch")
+bq.load(df, dm_name="airport_batch")
 
 # -------- 3) Expor resultado no Storage (opcional) --------
 output_file = "/tmp/storage/resultado.csv"
