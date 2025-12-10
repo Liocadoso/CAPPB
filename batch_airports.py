@@ -1,45 +1,20 @@
-from pycarol import Carol, Storage, CarolDataModel
-import pandas as pd
-import os
+from carol import Carol
 
-FILE_NAME = "airports.dat"
-DM_NAME = "airports_batch"     
+carol = Carol()
 
-def main():
-    print("\n===== Batch Airports =====\n")
+dm = carol.datamodel
 
-    if not os.path.exists(FILE_NAME):
-        raise FileNotFoundError(f"❌ Arquivo {FILE_NAME} não encontrado no container\n"
-                                "Verifique se está na raiz junto do Dockerfile.")
+# supondo airports_inmemory
+model = dm.get_model('airports_inmemory')
 
-    print(f"Lendo arquivo {FILE_NAME}...")
-    df = pd.read_csv(FILE_NAME, sep=",")   
-    print("\n📊 Prévia:\n", df.head())
+with open('/app/data/airports.dat', 'r') as f:
+    lines = f.readlines()
 
-    print("\nConectando na Carol...")
-    carol = Carol()
-    storage = Storage(carol)
-    dm = CarolDataModel(carol)
-
-    # ------------  1) Salvar arquivo no Storage  ----------------
-    output = "/tmp/storage/airports.csv"
-    df.to_csv(output, index=False)
-
-    storage.save(
-        name="airports.csv",
-        obj_path=output,
-        content_type="text/csv"
-    )
-    print("\n💾 Arquivo salvo no Storage da Carol\n")
-
-    # ------------  2) Inserir no DataModel  ---------------------
-    print(f"Inserindo no DataModel '{DM_NAME}' ...")
-    dm.ingest(df, model_name=DM_NAME)
-
-    print("\n🚀 Processo finalizado com sucesso!")
-    print("📍 Storage disponível na aba STORAGE do App")
-    print(f"📍 Dados disponíveis no DataModel: {DM_NAME}\n")
-
-
-if __name__ == "__main__":
-    main()
+for line in lines:
+    fields = line.strip().split(',')
+    payload = {
+        "campo1": fields[0],
+        "campo2": fields[1],
+        ...
+    }
+    model.save(payload)
