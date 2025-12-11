@@ -1,30 +1,35 @@
-from pycarol import Carol, BQ, Storage
 import pandas as pd
 import os
+from pycarol import Carol, Staging
+
+FILE_PATH = "/app/airports.dat"
+STAGING_NAME = "airport_batch"
+STEP_SIZE = 5000
+
+# Coloque o ID real do conector aqui:
+CONNECTOR_ID = "6b611cb89896467d8f0c896daf19e390"
 
 carol = Carol()
-bq = BQ(carol)
-storage = Storage(carol)
+staging = Staging(carol)
 
-# -------- 1) Ler .dat na raiz do projeto (após COPY no Docker) --------
-file_path = "/app/airports.dat"
+print(f"Lendo arquivo: {FILE_PATH}")
 
-if not os.path.exists(file_path):
-    raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
+if not os.path.exists(FILE_PATH):
+    raise FileNotFoundError(f"Arquivo não encontrado no container: {FILE_PATH}")
 
-df = pd.read_csv(file_path, sep=";", encoding="utf-8")  
+df = pd.read_csv(FILE_PATH, delimiter=";", encoding="utf-8", dtype=str)
+print(f"Arquivo carregado com {len(df)} registros.")
 
-# -------- 2) Inserir no datamodel --------
-bq.load(df, dm_name="airport_batch")
+records = df.to_dict(orient="records")
 
-# -------- 3) Expor resultado no Storage (opcional) --------
-output_file = "/tmp/storage/resultado.csv"
-df.to_csv(output_file, index=False)
+print(f"Enviando {len(records)} registros à staging '{STAGING_NAME}'...")
 
-storage.save(
-    name="resultado.csv",
-    obj_path=output_file,
-    content_type="text/csv"
+staging.send_data(
+    staging_name=STAGING_NAME,
+    data=records,
+    connector_id=CONNECTOR_ID,
+    step_size=STEP_SIZE,
+    print_stats=True
 )
 
-print("✔ Finalizado — Dados carregados para o DataModel e storage gerado!")
+print("✔ Ingestão concluída com sucesso!")
