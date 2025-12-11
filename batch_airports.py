@@ -3,7 +3,7 @@ import os
 from pycarol import Carol, Staging
 
 FILE_PATH = "/app/airports.dat"
-STAGING_NAME = "airportbatch"
+STAGING_NAME = "airport_batch"
 STEP_SIZE = 5000
 
 # Coloque o ID real do conector aqui:
