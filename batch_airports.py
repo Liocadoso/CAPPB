@@ -17,7 +17,7 @@ print(f"Lendo arquivo: {FILE_PATH}")
 if not os.path.exists(FILE_PATH):
     raise FileNotFoundError(f"Arquivo não encontrado no container: {FILE_PATH}")
 
-df = pd.read_csv(FILE_PATH, delimiter=";", encoding="utf-8", dtype=str)
+df = pd.read_csv(FILE_PATH, delimiter=",", encoding="utf-8", dtype=str)
 print(f"Arquivo carregado com {len(df)} registros.")
 
 records = df.to_dict(orient="records")
